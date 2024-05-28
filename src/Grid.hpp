@@ -14,6 +14,8 @@ public:
     void setCell(int x, int y, int tileIndex);
     int getCell(int x, int y);
     void loadTiles(const std::string& folderPath);
+    void saveToFile(const std::string& filePath);
+    void loadFromFile(const std::string& filePath);
 
 private:
     int width, height, cellSize;

@@ -1,6 +1,11 @@
 #include "Grid.hpp"
-#include <filesystem>
-#include <raylib.h>
+#include <__fs/filesystem>
+#include <fstream>
+#include <iostream>
+
+namespace std {
+    namespace filesystem = std::__fs::filesystem;
+}
 
 Grid::Grid(int width, int height, int cellSize)
     : width(width), height(height), cellSize(cellSize), cells(width, std::vector<int>(height, -1)) {}
@@ -59,4 +64,36 @@ int Grid::getCell(int x, int y) {
         return cells[x][y];
     }
     return -1;
+}
+
+void Grid::saveToFile(const std::string& filePath) {
+    std::ofstream file(filePath);
+    if (file.is_open()) {
+        file << width << " " << height << "\n";
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                file << cells[x][y] << " ";
+            }
+            file << "\n";
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file for saving.\n";
+    }
+}
+
+void Grid::loadFromFile(const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (file.is_open()) {
+        file >> width >> height;
+        cells.resize(width, std::vector<int>(height, -1));
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                file >> cells[x][y];
+            }
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file for loading.\n";
+    }
 }

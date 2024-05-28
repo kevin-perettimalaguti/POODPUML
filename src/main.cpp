@@ -10,7 +10,10 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Raylib - Tower Defense Grid");
 
     // Load tiles from assets folder
-    grid.loadTiles("assets/free-fields-tileset-pixel-art-for-tower-defense/Tiles");
+    grid.loadTiles("assets/free-fields-tileset-pixel-art-for-tower-defense");
+
+    // Load level from file if exists
+    grid.loadFromFile("level.txt");
 
     SetTargetFPS(60);
 
@@ -45,6 +48,9 @@ int main() {
         grid.draw();
         EndDrawing();
     }
+
+    // Save level to file before exiting
+    grid.saveToFile("level.txt");
 
     CloseWindow();
 
