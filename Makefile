@@ -1,36 +1,32 @@
-CXX := g++
-CXXFLAGS := -I src/include -I /usr/include/SDL2 -I game
-LDFLAGS := -L src/lib
-LIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image
+# Define the compiler
+CXX = g++
 
-# Directories
-SRC_DIR := game
-LOGIC_DIR := $(SRC_DIR)/logic_game/cpp_files
-VUE_DIR := $(SRC_DIR)/vue
+# Define the compiler flags
+CXXFLAGS = -std=c++11 -I src/include -I /opt/homebrew/Cellar/sdl2/2.30.3/include -I /opt/homebrew/Cellar/sdl2_image/2.8.2_1/include -I game
 
-# Source files
-SRC_FILES := main.cpp \
-             $(VUE_DIR)/Grid.cpp \
-             $(LOGIC_DIR)/Tower.cpp \
-             $(LOGIC_DIR)/Enemy.cpp \
-			 $(VUE_DIR)/Tile.cpp \
+# Define the linker flags
+LDFLAGS = -L/opt/homebrew/Cellar/sdl2/2.30.3/lib -L/opt/homebrew/Cellar/sdl2_image/2.8.2_1/lib -lSDL2 -lSDL2_image -Wl,-rpath,/opt/homebrew/Cellar/sdl2/2.30.3/lib -Wl,-rpath,/opt/homebrew/Cellar/sdl2_image/2.8.2_1/lib
 
-# Object files
-OBJ_FILES := $(SRC_FILES:.cpp=.o)
+# Define the source files
+SRCS = main.cpp game/vue/Grid.cpp game/logic_game/cpp_files/Tower.cpp game/logic_game/cpp_files/Enemy.cpp game/vue/Tile.cpp
 
-# Target executable
-TARGET := sdl_tower_defense
+# Define the object files
+OBJS = $(SRCS:.cpp=.o)
 
-# Build target
+# Define the executable
+TARGET = main	
+
+# Default target
 all: $(TARGET)
 
-$(TARGET): $(OBJ_FILES)
-	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+# Link the executable
+$(TARGET): $(OBJS)
+	$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
+# Compile the object files
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Clean up
 clean:
-	rm -f $(OBJ_FILES) $(TARGET)
-
-.PHONY: all clean
+	rm -f $(OBJS) $(TARGET)

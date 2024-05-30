@@ -1,4 +1,3 @@
-// Grid.cpp
 #include "Grid.h"
 #include <fstream>
 #include <iostream>
@@ -6,10 +5,10 @@
 Grid::Grid(int rows, int cols, int cellSize)
     : rows(rows), cols(cols), cellSize(cellSize), grid(rows, std::vector<int>(cols, 0)) {}
 
-void Grid::draw(SDL_Renderer* renderer, int x, int y) { // Adjusted to accept position arguments
+void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            SDL_Rect rect = { x + j * cellSize, y + i * cellSize, cellSize, cellSize }; // Adjusted position
+            SDL_Rect rect = { offsetX + j * cellSize, offsetY + i * cellSize, cellSize, cellSize };
             SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
             SDL_RenderFillRect(renderer, &rect);
 
@@ -23,7 +22,6 @@ void Grid::draw(SDL_Renderer* renderer, int x, int y) { // Adjusted to accept po
         }
     }
 }
-
 
 void Grid::setTile(int row, int col, int tile) {
     if (row >= 0 && row < rows && col >= 0 && col < cols) {

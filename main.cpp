@@ -26,8 +26,8 @@ int main(int argc, char* args[]) {
 
     Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE);
     std::vector<Tile> tiles;
-    tiles.emplace_back("assets/place/Tiles/1.png", 1, renderer);
-    tiles.emplace_back("assets/place/Tiles/2.png", 2, renderer);
+    tiles.push_back(Tile("assets/place/Tiles/1.png", 1, renderer));
+    tiles.push_back(Tile("assets/place/Tiles/2.png", 2, renderer));
 
     int selectedTileId = 1;
 
