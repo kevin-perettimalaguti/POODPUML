@@ -23,7 +23,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/include"
+                "/opt/homebrew/include",
+                "/usr/local/include"  // Added this line for more potential include paths
             ],
             "defines": [
                 "_DEBUG",
@@ -33,7 +34,9 @@
                 "PLATFORM_DESKTOP"
             ],
             "macFrameworkPath": [
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks"
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks",
+                "/System/Library/Frameworks",  // Added this line for system frameworks
+                "/Library/Frameworks"  // Added this line for additional frameworks
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
