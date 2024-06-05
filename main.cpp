@@ -2,15 +2,17 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "game/vue/Grid.h"
 #include "game/vue/Tile.h"
+#include "game/vue/Menu.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int GRID_ROWS = 10;
 const int GRID_COLS = 10;
 const int CELL_SIZE = 50;
-const int TILE_SELECTION_WIDTH = 150; // Increased width of the tile selection area
+const int TILE_SELECTION_WIDTH = 150;
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer);
 void close(SDL_Window* window, SDL_Renderer* renderer);
@@ -24,13 +26,29 @@ int main(int argc, char* args[]) {
         return -1;
     }
 
+    // Create and display the menu
+    Menu menu(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+    menu.addOption("Start Game");
+    menu.addOption("Quit");
+
+    bool inMenu = true;
+    while (inMenu) {
+        menu.draw();
+        int option = menu.handleEvents();
+        if (option == 0) {
+            inMenu = false; // Start game
+        } else if (option == 1) {
+            close(window, renderer);
+            return 0; // Quit
+        }
+    }
+
     Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE);
     std::vector<Tile> tiles;
     tiles.push_back(Tile("assets/place/Tiles/1.png", 1, renderer));
     tiles.push_back(Tile("assets/place/Tiles/2.png", 2, renderer));
 
     int selectedTileId = 1;
-
     bool quit = false;
     SDL_Event e;
 
@@ -85,7 +103,7 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
         return false;
     }
 
-    window = SDL_CreateWindow("SDL Tower Defense yes", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("SDL Tower Defense", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << "\n";
         return false;
@@ -103,6 +121,11 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
         return false;
     }
 
+    if (TTF_Init() == -1) {
+        std::cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << "\n";
+        return false;
+    }
+
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     return true;
 }
@@ -110,6 +133,7 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 void close(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }

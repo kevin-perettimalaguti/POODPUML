@@ -2,19 +2,19 @@
 CXX = g++
 
 # Define the compiler flags
-CXXFLAGS = -std=c++11 -I src/include -I /opt/homebrew/Cellar/sdl2/2.30.3/include -I /opt/homebrew/Cellar/sdl2_image/2.8.2_1/include -I game
+CXXFLAGS = -std=c++11 -I src/include -I /opt/homebrew/Cellar/sdl2/2.30.3/include -I /opt/homebrew/Cellar/sdl2_image/2.8.2_1/include -I /opt/homebrew/Cellar/sdl2_ttf/2.22.0/include -I game
 
 # Define the linker flags
-LDFLAGS = -L/opt/homebrew/Cellar/sdl2/2.30.3/lib -L/opt/homebrew/Cellar/sdl2_image/2.8.2_1/lib -lSDL2 -lSDL2_image -Wl,-rpath,/opt/homebrew/Cellar/sdl2/2.30.3/lib -Wl,-rpath,/opt/homebrew/Cellar/sdl2_image/2.8.2_1/lib
+LDFLAGS = -L/opt/homebrew/Cellar/sdl2/2.30.3/lib -L/opt/homebrew/Cellar/sdl2_image/2.8.2_1/lib -L/opt/homebrew/Cellar/sdl2_ttf/2.22.0/lib -lSDL2 -lSDL2_image -lSDL2_ttf -Wl,-rpath,/opt/homebrew/Cellar/sdl2/2.30.3/lib -Wl,-rpath,/opt/homebrew/Cellar/sdl2_image/2.8.2_1/lib -Wl,-rpath,/opt/homebrew/Cellar/sdl2_ttf/2.22.0/lib
 
 # Define the source files
-SRCS = main.cpp game/vue/Grid.cpp game/logic_game/cpp_files/Tower.cpp game/logic_game/cpp_files/Enemy.cpp game/vue/Tile.cpp
+SRCS = main.cpp game/vue/Grid.cpp game/logic_game/cpp_files/Tower.cpp game/logic_game/cpp_files/Enemy.cpp game/vue/Tile.cpp game/vue/Menu.cpp
 
 # Define the object files
 OBJS = $(SRCS:.cpp=.o)
 
 # Define the executable
-TARGET = main	
+TARGET = main
 
 # Default target
 all: $(TARGET)
