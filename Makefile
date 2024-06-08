@@ -14,7 +14,7 @@ SRCS = main.cpp game/vue/Grid.cpp game/logic_game/cpp_files/Tower.cpp game/logic
 OBJS = $(SRCS:.cpp=.o)
 
 # Define the executable
-TARGET = main
+TARGET = main 
 
 # Default target
 all: $(TARGET)

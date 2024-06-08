@@ -4,15 +4,14 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include "game/vue/Grid.h"
-#include "game/vue/Tile.h"
 #include "game/vue/Menu.h"
+#include "game/logic_game/cpp_files/Enemy.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int GRID_ROWS = 10;
 const int GRID_COLS = 10;
 const int CELL_SIZE = 50;
-const int TILE_SELECTION_WIDTH = 150;
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer);
 void close(SDL_Window* window, SDL_Renderer* renderer);
@@ -44,15 +43,18 @@ int main(int argc, char* args[]) {
     }
 
     Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE);
-    std::vector<Tile> tiles;
-    tiles.push_back(Tile("assets/place/Tiles/1.png", 1, renderer));
-    tiles.push_back(Tile("assets/place/Tiles/2.png", 2, renderer));
+    std::vector<Enemy> enemies;
+    enemies.push_back(Enemy(0, SCREEN_HEIGHT - CELL_SIZE, CELL_SIZE, 1)); // Adding an enemy for demonstration
 
-    int selectedTileId = 1;
     bool quit = false;
     SDL_Event e;
 
+    Uint32 lastTime = SDL_GetTicks();
     while (!quit) {
+        Uint32 currentTime = SDL_GetTicks();
+        float deltaTime = (currentTime - lastTime) / 1000.0f; // Calculate delta time in seconds
+        lastTime = currentTime;
+
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -60,15 +62,10 @@ int main(int argc, char* args[]) {
             if (e.type == SDL_MOUSEBUTTONDOWN) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if (x < TILE_SELECTION_WIDTH) { // Tile selection area
-                    int tileIndex = y / CELL_SIZE;
-                    if (tileIndex >= 0 && tileIndex < tiles.size()) {
-                        selectedTileId = tiles[tileIndex].getId();
-                    }
-                } else { // Grid area
-                    int row = y / CELL_SIZE;
-                    int col = (x - TILE_SELECTION_WIDTH) / CELL_SIZE;
-                    grid.setTile(row, col, selectedTileId);
+                int row = y / CELL_SIZE;
+                int col = x / CELL_SIZE;
+                if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS && !grid.isOccupied(row, col)) {
+                    grid.setTile(row, col, 1); // Place a tower (represented by tile value 1)
                 }
             }
         }
@@ -76,23 +73,18 @@ int main(int argc, char* args[]) {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        // Draw the tile selection area
-        for (size_t i = 0; i < tiles.size(); ++i) {
-            tiles[i].draw(renderer, 0, i * CELL_SIZE);
-        }
-
-        // Draw the selected tile indicator
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red outline
-        SDL_Rect selectedRect = {0, (selectedTileId - 1) * CELL_SIZE, TILE_SELECTION_WIDTH, CELL_SIZE};
-        SDL_RenderDrawRect(renderer, &selectedRect);
-
         // Draw the grid
-        grid.draw(renderer, TILE_SELECTION_WIDTH, 0); // Adjusted position of the grid
+        grid.draw(renderer, 0, 0);
+
+        // Update and draw enemies
+        for (auto& enemy : enemies) {
+            enemy.update(grid.getGrid(), deltaTime); // Use the public getGrid method
+            enemy.draw(renderer);
+        }
 
         SDL_RenderPresent(renderer);
     }
 
-    grid.saveLevel("level.txt");
     close(window, renderer);
     return 0;
 }

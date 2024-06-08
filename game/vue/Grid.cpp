@@ -13,8 +13,9 @@ void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
             SDL_RenderFillRect(renderer, &rect);
 
             if (grid[i][j] != 0) {
-                // Draw the tile image
-                // Assuming you have a texture manager or similar to handle textures
+                // Blue color for towers
+                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                SDL_RenderFillRect(renderer, &rect);
             }
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -34,6 +35,14 @@ int Grid::getTile(int row, int col) const {
         return grid[row][col];
     }
     return -1;
+}
+
+bool Grid::isOccupied(int row, int col) const {
+    return getTile(row, col) != 0;
+}
+
+const std::vector<std::vector<int>>& Grid::getGrid() const {
+    return grid;
 }
 
 void Grid::saveLevel(const std::string& filename) const {

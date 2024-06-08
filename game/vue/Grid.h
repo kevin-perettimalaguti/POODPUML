@@ -13,12 +13,14 @@ public:
     int getTile(int row, int col) const;
     void saveLevel(const std::string& filename) const;
     void loadLevel(const std::string& filename);
+    bool isOccupied(int row, int col) const;
+    const std::vector<std::vector<int>>& getGrid() const; // Add this method
 
 private:
     int rows;
     int cols;
     int cellSize;
-    std::vector<std::vector<int> > grid; // Corrected space between angle brackets
+    std::vector<std::vector<int>> grid;
 };
 
 #endif // GRID_H
