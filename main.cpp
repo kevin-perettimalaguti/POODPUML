@@ -50,6 +50,10 @@ int main(int argc, char* args[]) {
     Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE, renderer);
     grid.loadTextures(renderer, NUM_TILES);
 
+    if (loadGame) {
+        grid.loadLevel("savefile.txt");
+    }
+
     int currentTileIndex = 0;
     bool quit = false;
     SDL_Event e;
@@ -71,6 +75,12 @@ int main(int argc, char* args[]) {
             if (e.type == SDL_KEYDOWN) {
                 if (e.key.keysym.sym == SDLK_y) {
                     currentTileIndex = (currentTileIndex + 1) % NUM_TILES; // Cycle through the tile textures
+                }
+                if (e.key.keysym.sym == SDLK_s) {
+                    grid.saveLevel("savefile.txt"); // Save the current level
+                }
+                if (e.key.keysym.sym == SDLK_f) {
+                    grid.loadLevel("savefile.txt"); // Load the saved level
                 }
             }
         }
