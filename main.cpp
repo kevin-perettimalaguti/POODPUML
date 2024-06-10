@@ -111,7 +111,7 @@ int main(int argc, char* args[]) {
 
         // Spawn enemies at intervals
         if (currentTime - lastSpawnTime > 1000) { // 1 second interval
-            enemies.push_back(Enemy(rand() % (SCREEN_WIDTH - CELL_SIZE), SCREEN_HEIGHT - CELL_SIZE, CELL_SIZE, 100));
+            enemies.push_back(Enemy(rand() % (SCREEN_WIDTH - CELL_SIZE), SCREEN_HEIGHT - CELL_SIZE, CELL_SIZE, 100, renderer));
             lastSpawnTime = currentTime;
         }
 
