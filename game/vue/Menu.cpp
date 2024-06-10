@@ -36,7 +36,6 @@ SDL_Texture* Menu::loadTexture(const std::string& path) {
 
 void Menu::renderTexture(SDL_Texture* texture, int x, int y, int w, int h) {
     SDL_Rect renderQuad = { x, y, w, h };
-   
     SDL_RenderCopy(renderer, texture, nullptr, &renderQuad);
 }
 
@@ -55,7 +54,7 @@ void Menu::draw() {
     // Render logo
     if (logoTexture) {
         int logoWidth = 400;
-        int logoHeight = 400;
+        int logoHeight = 200;
         int x = (width - logoWidth) / 2;
         int y = height / 4 - logoHeight / 2;
         renderTexture(logoTexture, x, y, logoWidth, logoHeight);
@@ -87,7 +86,7 @@ void Menu::draw() {
     SDL_RenderPresent(renderer);
 }
 
-int Menu::handleEvents() {
+int Menu::handleEvents(bool& loadSave) {
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT) {
@@ -103,6 +102,9 @@ int Menu::handleEvents() {
                     break;
                 case SDLK_RETURN:
                     return selectedOption;
+                case SDLK_f:
+                    loadSave = true;
+                    return -1;
             }
         }
     }

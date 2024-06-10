@@ -11,7 +11,7 @@ public:
     ~Menu();
     void addOption(const std::string& option);
     void draw();
-    int handleEvents();
+    int handleEvents(bool& loadSave);
 
 private:
     SDL_Renderer* renderer;

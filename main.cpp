@@ -34,9 +34,10 @@ int main(int argc, char* args[]) {
 
     bool inMenu = true;
     bool loadGame = false;
+    bool loadSave = false;
     while (inMenu) {
         menu.draw();
-        int option = menu.handleEvents();
+        int option = menu.handleEvents(loadSave);
         if (option == 0) {
             inMenu = false; // Start game
         } else if (option == 1) {
@@ -45,6 +46,9 @@ int main(int argc, char* args[]) {
         } else if (option == 2) {
             close(window, renderer);
             return 0; // Quit
+        } else if (loadSave) {
+            loadGame = true;
+            inMenu = false;
         }
     }
 
