@@ -156,7 +156,7 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
         return false;
     }
 
-    int imgFlags = IMG_INIT_PNG;
+    int imgFlags = IMG_INIT_PNG | IMG_INIT_AVIF;
     if (!(IMG_Init(imgFlags) & imgFlags)) {
         std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << "\n";
         return false;
