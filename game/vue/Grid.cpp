@@ -4,15 +4,12 @@
 #include <SDL2/SDL_image.h>
 
 Grid::Grid(int rows, int cols, int cellSize, SDL_Renderer* renderer)
-    : rows(rows), cols(cols), cellSize(cellSize), grid(rows, std::vector<int>(cols, 0)), towerTexture(nullptr) {
-    towerTexture = loadTexture("assets/place/Tiles/1.png", renderer);
-    if (towerTexture == nullptr) {
-        std::cerr << "Failed to load tower texture!\n";
-    }
-}
+    : rows(rows), cols(cols), cellSize(cellSize), grid(rows, std::vector<int>(cols, 0)) {}
 
 Grid::~Grid() {
-    SDL_DestroyTexture(towerTexture);
+    for (auto texture : tileTextures) {
+        SDL_DestroyTexture(texture);
+    }
 }
 
 SDL_Texture* Grid::loadTexture(const std::string& path, SDL_Renderer* renderer) {
@@ -30,6 +27,16 @@ SDL_Texture* Grid::loadTexture(const std::string& path, SDL_Renderer* renderer) 
     return newTexture;
 }
 
+void Grid::loadTextures(SDL_Renderer* renderer, int numTextures) {
+    for (int i = 1; i <= numTextures; ++i) {
+        std::string path = "assets/place/Tiles/" + std::to_string(i) + ".png";
+        SDL_Texture* texture = loadTexture(path, renderer);
+        if (texture) {
+            tileTextures.push_back(texture);
+        }
+    }
+}
+
 void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
@@ -38,7 +45,10 @@ void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
             SDL_RenderFillRect(renderer, &rect);
 
             if (grid[i][j] != 0) {
-                SDL_RenderCopy(renderer, towerTexture, nullptr, &rect);
+                int textureIndex = grid[i][j] - 1;
+                if (textureIndex >= 0 && textureIndex < tileTextures.size()) {
+                    SDL_RenderCopy(renderer, tileTextures[textureIndex], nullptr, &rect);
+                }
             }
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

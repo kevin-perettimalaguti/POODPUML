@@ -11,6 +11,7 @@ const int SCREEN_HEIGHT = 600;
 const int GRID_ROWS = 10;
 const int GRID_COLS = 10;
 const int CELL_SIZE = 50;
+const int NUM_TILES = 5; // Number of tile textures available
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer);
 void close(SDL_Window* window, SDL_Renderer* renderer);
@@ -27,22 +28,29 @@ int main(int argc, char* args[]) {
     // Create and display the menu
     Menu menu(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     menu.addOption("Start Game");
+    menu.addOption("Load Game");
     menu.addOption("Quit");
 
     bool inMenu = true;
+    bool loadGame = false;
     while (inMenu) {
         menu.draw();
         int option = menu.handleEvents();
         if (option == 0) {
             inMenu = false; // Start game
         } else if (option == 1) {
+            loadGame = true;
+            inMenu = false; // Load game
+        } else if (option == 2) {
             close(window, renderer);
             return 0; // Quit
         }
     }
 
     Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE, renderer);
+    grid.loadTextures(renderer, NUM_TILES);
 
+    int currentTileIndex = 0;
     bool quit = false;
     SDL_Event e;
 
@@ -57,7 +65,12 @@ int main(int argc, char* args[]) {
                 int row = y / CELL_SIZE;
                 int col = x / CELL_SIZE;
                 if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS && !grid.isOccupied(row, col)) {
-                    grid.setTile(row, col, 1); // Place a tower (represented by tile value 1)
+                    grid.setTile(row, col, currentTileIndex + 1); // Place a tower (represented by tile value 1+currentTileIndex)
+                }
+            }
+            if (e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_y) {
+                    currentTileIndex = (currentTileIndex + 1) % NUM_TILES; // Cycle through the tile textures
                 }
             }
         }

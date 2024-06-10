@@ -16,14 +16,14 @@ public:
     void loadLevel(const std::string& filename);
     bool isOccupied(int row, int col) const;
     const std::vector<std::vector<int>>& getGrid() const;
+    void loadTextures(SDL_Renderer* renderer, int numTextures);
 
 private:
     int rows;
     int cols;
     int cellSize;
     std::vector<std::vector<int>> grid;
-    SDL_Texture* towerTexture;
-
+    std::vector<SDL_Texture*> tileTextures;
     SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer);
 };
 
