@@ -10,25 +10,38 @@ Enemy::Enemy(int x, int y, int size, int speed)
 }
 
 void Enemy::findPath(const std::vector<std::vector<int>>& grid) {
+    // Clear any previous path
+    path.clear();
+
     // Simple BFS for pathfinding
     int rows = grid.size();
     int cols = grid[0].size();
     std::vector<std::vector<bool>> visited(rows, std::vector<bool>(cols, false));
     std::queue<std::pair<int, int>> q;
+    std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     q.push({y / size, x / size});
     visited[y / size][x / size] = true;
 
-    std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     while (!q.empty()) {
         auto [curRow, curCol] = q.front();
         q.pop();
+
         for (auto [dr, dc] : directions) {
             int newRow = curRow + dr;
             int newCol = curCol + dc;
+
+            // Check if the new position is valid and not visited
             if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && !visited[newRow][newCol] && grid[newRow][newCol] == 0) {
                 q.push({newRow, newCol});
                 visited[newRow][newCol] = true;
-                path.push_back({newRow * size, newCol * size});
+
+                // Record the path
+                path.push_back({newCol * size, newRow * size});
+                
+                // Stop if we reach the top row
+                if (newRow == 0) {
+                    return;
+                }
             }
         }
     }
@@ -36,14 +49,14 @@ void Enemy::findPath(const std::vector<std::vector<int>>& grid) {
 
 void Enemy::update(const std::vector<std::vector<int>>& grid, float deltaTime) {
     elapsed += deltaTime;
-    if (elapsed >= 1.0f) {
+    if (elapsed >= 0.5f) { // Adjust this for speed control
         if (pathIndex >= path.size()) {
-            findPath(grid); // Find a new path
+            findPath(grid); // Find a new path if the current one is finished
             pathIndex = 0;
         }
         if (pathIndex < path.size()) {
-            y = path[pathIndex].first;
-            x = path[pathIndex].second;
+            y = path[pathIndex].second;
+            x = path[pathIndex].first;
             pathIndex++;
         }
         elapsed = 0.0f;

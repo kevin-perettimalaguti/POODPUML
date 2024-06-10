@@ -5,7 +5,6 @@
 #include <SDL2/SDL_ttf.h>
 #include "game/vue/Grid.h"
 #include "game/vue/Menu.h"
-#include "game/logic_game/cpp_files/Enemy.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -42,19 +41,12 @@ int main(int argc, char* args[]) {
         }
     }
 
-    Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE);
-    std::vector<Enemy> enemies;
-    enemies.push_back(Enemy(0, SCREEN_HEIGHT - CELL_SIZE, CELL_SIZE, 1)); // Adding an enemy for demonstration
+    Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE, renderer);
 
     bool quit = false;
     SDL_Event e;
 
-    Uint32 lastTime = SDL_GetTicks();
     while (!quit) {
-        Uint32 currentTime = SDL_GetTicks();
-        float deltaTime = (currentTime - lastTime) / 1000.0f; // Calculate delta time in seconds
-        lastTime = currentTime;
-
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -75,12 +67,6 @@ int main(int argc, char* args[]) {
 
         // Draw the grid
         grid.draw(renderer, 0, 0);
-
-        // Update and draw enemies
-        for (auto& enemy : enemies) {
-            enemy.update(grid.getGrid(), deltaTime); // Use the public getGrid method
-            enemy.draw(renderer);
-        }
 
         SDL_RenderPresent(renderer);
     }

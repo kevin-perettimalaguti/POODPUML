@@ -1,9 +1,34 @@
 #include "Grid.h"
 #include <fstream>
 #include <iostream>
+#include <SDL2/SDL_image.h>
 
-Grid::Grid(int rows, int cols, int cellSize)
-    : rows(rows), cols(cols), cellSize(cellSize), grid(rows, std::vector<int>(cols, 0)) {}
+Grid::Grid(int rows, int cols, int cellSize, SDL_Renderer* renderer)
+    : rows(rows), cols(cols), cellSize(cellSize), grid(rows, std::vector<int>(cols, 0)), towerTexture(nullptr) {
+    towerTexture = loadTexture("assets/place/Tiles/1.png", renderer);
+    if (towerTexture == nullptr) {
+        std::cerr << "Failed to load tower texture!\n";
+    }
+}
+
+Grid::~Grid() {
+    SDL_DestroyTexture(towerTexture);
+}
+
+SDL_Texture* Grid::loadTexture(const std::string& path, SDL_Renderer* renderer) {
+    SDL_Texture* newTexture = nullptr;
+    SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+    if (loadedSurface == nullptr) {
+        std::cerr << "Unable to load image " << path << "! SDL_image Error: " << IMG_GetError() << "\n";
+    } else {
+        newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+        if (newTexture == nullptr) {
+            std::cerr << "Unable to create texture from " << path << "! SDL Error: " << SDL_GetError() << "\n";
+        }
+        SDL_FreeSurface(loadedSurface);
+    }
+    return newTexture;
+}
 
 void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
     for (int i = 0; i < rows; ++i) {
@@ -13,9 +38,7 @@ void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
             SDL_RenderFillRect(renderer, &rect);
 
             if (grid[i][j] != 0) {
-                // Blue color for towers
-                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-                SDL_RenderFillRect(renderer, &rect);
+                SDL_RenderCopy(renderer, towerTexture, nullptr, &rect);
             }
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

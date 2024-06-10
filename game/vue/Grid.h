@@ -7,20 +7,24 @@
 
 class Grid {
 public:
-    Grid(int rows, int cols, int cellSize);
+    Grid(int rows, int cols, int cellSize, SDL_Renderer* renderer);
+    ~Grid();
     void draw(SDL_Renderer* renderer, int offsetX, int offsetY);
     void setTile(int row, int col, int tile);
     int getTile(int row, int col) const;
     void saveLevel(const std::string& filename) const;
     void loadLevel(const std::string& filename);
     bool isOccupied(int row, int col) const;
-    const std::vector<std::vector<int>>& getGrid() const; // Add this method
+    const std::vector<std::vector<int>>& getGrid() const;
 
 private:
     int rows;
     int cols;
     int cellSize;
     std::vector<std::vector<int>> grid;
+    SDL_Texture* towerTexture;
+
+    SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer);
 };
 
 #endif // GRID_H
