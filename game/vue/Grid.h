@@ -17,6 +17,7 @@ public:
     bool isOccupied(int row, int col) const;
     const std::vector<std::vector<int>>& getGrid() const;
     void loadTextures(SDL_Renderer* renderer, int numTextures);
+    void loadTowerTexture(SDL_Renderer* renderer);
 
 private:
     int rows;
@@ -24,6 +25,7 @@ private:
     int cellSize;
     std::vector<std::vector<int>> grid;
     std::vector<SDL_Texture*> tileTextures;
+    SDL_Texture* towerTexture;
     SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer);
 };
 

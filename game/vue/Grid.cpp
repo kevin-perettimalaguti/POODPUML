@@ -4,12 +4,13 @@
 #include <SDL2/SDL_image.h>
 
 Grid::Grid(int rows, int cols, int cellSize, SDL_Renderer* renderer)
-    : rows(rows), cols(cols), cellSize(cellSize), grid(rows, std::vector<int>(cols, 0)) {}
+    : rows(rows), cols(cols), cellSize(cellSize), grid(rows, std::vector<int>(cols, 0)), towerTexture(nullptr) {}
 
 Grid::~Grid() {
     for (auto texture : tileTextures) {
         SDL_DestroyTexture(texture);
     }
+    SDL_DestroyTexture(towerTexture);
 }
 
 SDL_Texture* Grid::loadTexture(const std::string& path, SDL_Renderer* renderer) {
@@ -37,6 +38,13 @@ void Grid::loadTextures(SDL_Renderer* renderer, int numTextures) {
     }
 }
 
+void Grid::loadTowerTexture(SDL_Renderer* renderer) {
+    towerTexture = loadTexture("assets/archer/idle/1.png", renderer);
+    if (towerTexture == nullptr) {
+        std::cerr << "Failed to load tower texture!\n";
+    }
+}
+
 void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
@@ -48,6 +56,9 @@ void Grid::draw(SDL_Renderer* renderer, int offsetX, int offsetY) {
                 int textureIndex = grid[i][j] - 1;
                 if (textureIndex >= 0 && textureIndex < tileTextures.size()) {
                     SDL_RenderCopy(renderer, tileTextures[textureIndex], nullptr, &rect);
+                }
+                if (grid[i][j] == -1) {
+                    SDL_RenderCopy(renderer, towerTexture, nullptr, &rect);
                 }
             }
 

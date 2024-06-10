@@ -5,6 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "game/vue/Grid.h"
 #include "game/vue/Menu.h"
+#include "game/logic_game/cpp_files/Enemy.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -49,6 +50,7 @@ int main(int argc, char* args[]) {
 
     Grid grid(GRID_ROWS, GRID_COLS, CELL_SIZE, renderer);
     grid.loadTextures(renderer, NUM_TILES);
+    grid.loadTowerTexture(renderer);
 
     if (loadGame) {
         grid.loadLevel("savefile.txt");
@@ -58,7 +60,17 @@ int main(int argc, char* args[]) {
     bool quit = false;
     SDL_Event e;
 
+    std::vector<Enemy> enemies;
+    Uint32 lastSpawnTime = SDL_GetTicks();
+
+    Uint32 lastClickTime = 0;
+    int lastRow = -1, lastCol = -1;
+
     while (!quit) {
+        Uint32 currentTime = SDL_GetTicks();
+        float deltaTime = (currentTime - lastSpawnTime) / 1000.0f;
+        lastSpawnTime = currentTime;
+
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -68,8 +80,20 @@ int main(int argc, char* args[]) {
                 SDL_GetMouseState(&x, &y);
                 int row = y / CELL_SIZE;
                 int col = x / CELL_SIZE;
-                if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS && !grid.isOccupied(row, col)) {
-                    grid.setTile(row, col, currentTileIndex + 1); // Place a tower (represented by tile value 1+currentTileIndex)
+
+                if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS) {
+                    Uint32 clickTime = SDL_GetTicks();
+                    if (clickTime - lastClickTime < 500 && row == lastRow && col == lastCol) {
+                        grid.setTile(row, col, -1); // Place a tower (represented by tile value -1)
+                    } else {
+                        lastClickTime = clickTime;
+                        lastRow = row;
+                        lastCol = col;
+
+                        if (!grid.isOccupied(row, col)) {
+                            grid.setTile(row, col, currentTileIndex + 1); // Place a tile
+                        }
+                    }
                 }
             }
             if (e.type == SDL_KEYDOWN) {
@@ -85,11 +109,27 @@ int main(int argc, char* args[]) {
             }
         }
 
+        // Spawn enemies at intervals
+        if (currentTime - lastSpawnTime > 1000) { // 1 second interval
+            enemies.push_back(Enemy(rand() % (SCREEN_WIDTH - CELL_SIZE), SCREEN_HEIGHT - CELL_SIZE, CELL_SIZE, 100));
+            lastSpawnTime = currentTime;
+        }
+
+        // Update enemies
+        for (auto& enemy : enemies) {
+            enemy.update(deltaTime);
+        }
+
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
         // Draw the grid
         grid.draw(renderer, 0, 0);
+
+        // Draw enemies
+        for (const auto& enemy : enemies) {
+            enemy.draw(renderer);
+        }
 
         SDL_RenderPresent(renderer);
     }
